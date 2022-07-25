@@ -33,7 +33,7 @@
             "value": "UbuntuServer"
         },
         "sku": {
-            "value": "18.04-LTS"
+            "value": "20.04-LTS"
         },
         "version": {
             "value": "latest"
