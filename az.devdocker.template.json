@@ -64,6 +64,13 @@
             "type": "string",
             "defaultValue": "Premium_LRS"
         },
+		"nsgName": {
+			"type": "string",
+			"defaultValue": "webnsg3",
+			"metadata": {
+				"description": "Network security group name"
+			}
+		},
         "fileUris": {
             "type": "array"
         },
