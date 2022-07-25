@@ -1,0 +1,50 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualNetworkName": {
+            "value": "dev-vnet"
+        },
+        "subnetName": {
+            "value": "dev-subnet"
+        },
+        "adminUsername": {
+            "value": "master"
+        },
+        "adminPassword": {
+            "value": "Lab@password"
+        },
+        "numberOfInstances": {
+            "value": 1
+        },
+        "OS": {
+            "value": "Linux"
+        },
+        "vmSizes": {
+            "value": "Standard_D2as_v5"
+        },
+        "osDiskType": {
+            "value": "Premium_LRS"
+        },
+        "publisher": {
+            "value": "Canonical"
+        },
+        "offer": {
+            "value": "UbuntuServer"
+        },
+        "sku": {
+            "value": "18.04-LTS"
+        },
+        "version": {
+            "value": "latest"
+        },
+        "fileUris": {
+            "value": [
+                "https://raw.githubusercontent.com/ahmadzahoory/azdevv2/master/az-204-01-02-script.sh"
+            ]
+        },
+        "commandToExecute": {
+            "value": "sh az-204-01-02-script.sh"
+        }
+    }
+}
