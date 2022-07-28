@@ -86,7 +86,7 @@
     },
     "variables": {
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'),parameters('subnetName'))]",
-		"nsgName": "onpadwsnsg",
+		"nsgName": "devwsnsg",
         "Linux": {
             "publisher": "[parameters('publisher')]",
             "offer": "[parameters('offer')]",
@@ -103,7 +103,7 @@
     },
     "resources": [
 		{
-            "name": "[concat('onpadwspubip', copyindex(),guid(parameters('OS')))]",
+            "name": "[concat('devwspubip', copyindex(),guid(parameters('OS')))]",
             "type": "Microsoft.Network/publicIpAddresses",
             "apiVersion": "2019-02-01",
             "location": "[parameters('location')]",
@@ -140,7 +140,7 @@
       },       
 	   {
             "type": "Microsoft.Network/networkInterfaces",
-            "name": "[concat('onpadwsnic', copyindex(),guid(parameters('OS')))]",
+            "name": "[concat('devwsnic', copyindex(),guid(parameters('OS')))]",
             "apiVersion": "2020-11-01",
             "location": "[parameters('location')]",
             "dependsOn": [
@@ -160,7 +160,7 @@
                             },
 							"privateIPAllocationMethod": "Dynamic",
 							"publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat('onpadwspubip', copyindex(),guid(parameters('OS'))))]"
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat('devwspubip', copyindex(),guid(parameters('OS'))))]"
                             }
                         }
                             
@@ -173,7 +173,7 @@
         },
         {
             "type": "Microsoft.Compute/virtualMachines",
-            "name": "dev-vs",
+            "name": "dev-vs-ws",
             "apiVersion": "2021-07-01",
             "location": "[parameters('location')]",
             "copy": {
@@ -188,7 +188,7 @@
                     "vmSize": "[parameters('vmSizes')]"
                 },
                 "osProfile": {
-                    "computerName": "dev-vs",
+                    "computerName": "dev-vs-ws",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]"
                 },
@@ -201,7 +201,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces',concat('onpadwsnic', copyindex(),guid(parameters('OS'))))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',concat('devwsnic', copyindex(),guid(parameters('OS'))))]"
                         }
                     ]
                 }
