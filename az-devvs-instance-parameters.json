@@ -1,42 +1,45 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "virtualNetworkName": {
-            "value": "devvs-vnet"
-        },
-        "subnetName": {
-            "value": "devvs-subnet"
-        },
         "adminUsername": {
             "value": "master"
         },
         "adminPassword": {
             "value": "Lab@password"
         },
-        "numberOfInstances": {
-            "value": 1
+        "vmNamePrefix": {
+            "value": "dev-vs-ws"
         },
-        "OS": {
-            "value": "Windows"
+        "nicNamePrefix": {
+            "value": "devws-nic"
         },
-        "vmSizes": {
-            "value": "Standard_D2as_v5"
-        },
-        "osDiskType": {
-            "value": "Premium_LRS"
-        },
-        "publisher": {
+        "imagePublisher": {
             "value": "MicrosoftWindowsDesktop"
         },
-        "offer": {
+        "imageOffer": {
             "value": "Windows-10"
         },
-        "sku": {
+        "imageSKU": {
             "value": "win10-21h2-pro-g2"
         },
-        "version": {
-            "value": "latest"
+        "vmSize": {
+            "value": "Standard_D2s_v3"
+        },
+        "virtualNetworkName": {
+            "value": "devws-vnet"
+        },
+        "addressPrefix": {
+            "value": "10.0.0.0/24"
+        },
+        "virtualNetworkResourceGroup": {
+            "value": "az-devvs-rg"
+        },
+        "subnet0Name": {
+            "value": "devws-subnet"
+        },
+        "subnet0Prefix": {
+            "value": "10.0.0.0/24"
         }
     }
 }
