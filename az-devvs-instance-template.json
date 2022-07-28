@@ -1,211 +1,253 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "virtualNetworkName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the virtual network"
-            }
-        },
-        "subnetName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the subnet"
-            }
-        },
-        "adminUsername": {
-            "type": "string",
-            "metadata": {
-                "description": "Admin username for VM"
-            }
-        },
-        "adminPassword": {
-            "type": "securestring",
-            "metadata": {
-                "description": "Admin password for VMs"
-            }
-        },
-        "numberOfInstances": {
-            "type": "int",
-            "defaultValue": 1,
-            "minValue": 1,
-            "maxValue": 5,
-            "metadata": {
-                "description": "Number of VMs to deploy, limit 5 since this sample is using a single storage account"
-            }
-        },
-        "OS": {
-            "type": "string",
-            "defaultValue": "Linux",
-            "allowedValues": [
-                "Linux",
-                "Windows"
-            ],
-            "metadata": {
-                "description": "OS Platform for the VM"
-            }
-        },
-        "location": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().location]",
-            "metadata": {
-                "description": "Location for all resources."
-            }
-        },
-        "vmSizes": {
-            "type": "string",
-            "defaultValue": "Standard_D2as_v5",
-            "metadata": {
-                "description": "The type of replication to use for the VM size."
-            }
-        },
-        "osDiskType": {
-            "type": "string",
-            "defaultValue": "Premium_LRS"
-        },
-		"nsgName": {
-			"type": "string",
-			"defaultValue": "devwsnsg",
-			"metadata": {
-				"description": "Network security group name"
-			}
-		},
-        "publisher": {
-            "type": "string"
-        },
-        "offer": {
-            "type": "string"
-        },
-        "sku": {
-            "type": "string"
-        },
-        "version": {
-            "type": "string"
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "adminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "Admin username"
+      }
     },
-    "variables": {
-        "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('virtualNetworkName'),parameters('subnetName'))]",
-		"nsgName": "devwsnsg",
-        "Linux": {
-            "publisher": "[parameters('publisher')]",
-            "offer": "[parameters('offer')]",
-            "sku": "[parameters('sku')]",
-            "version": "[parameters('version')]"
-        },
-        "Windows": {
-            "publisher": "[parameters('publisher')]",
-            "offer": "[parameters('offer')]",
-            "sku": "[parameters('sku')]",
-            "version": "[parameters('version')]"
-        },
-        "imageReference": "[variables(parameters('OS'))]"
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Admin password"
+      }
     },
-    "resources": [
-		{
-            "name": "[concat('devwspubip', copyindex(),guid(parameters('OS')))]",
-            "type": "Microsoft.Network/publicIpAddresses",
-            "apiVersion": "2019-02-01",
-            "location": "[parameters('location')]",
-            "copy": {
-                "name": "publicIpLoop",
-                "count": "[parameters('numberOfInstances')]"
-            },
+    "vmNamePrefix": {
+      "type": "string",
+      "defaultValue": "dev-vs-ws",
+      "metadata": {
+        "description": "VM name prefix"
+      }
+    },
+    "pipNamePrefix": {
+      "type": "string",
+      "defaultValue": "devws-pip",
+      "metadata": {
+        "description": "Public IP address name prefix"
+      }
+    },
+    "nicNamePrefix": {
+      "type": "string",
+      "defaultValue": "devws-nic",
+      "metadata": {
+        "description": "Nic name prefix"
+      }
+    },
+    "imagePublisher": {
+      "type": "string",
+      "defaultValue": "MicrosoftWindowsDesktop",
+      "metadata": {
+        "description": "Image Publisher"
+      }
+    },
+    "imageOffer": {
+      "type": "string",
+      "defaultValue": "Windows-10",
+      "metadata": {
+        "description": "Image Offer"
+      }
+    },
+    "imageSKU": {
+      "type": "string",
+      "defaultValue": "win10-21h2-pro-g2",
+      "metadata": {
+        "description": "Image SKU"
+      }
+    },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "Standard_B2ms",
+      "metadata": {
+        "description": "VM size"
+      }
+    },
+    "virtualNetworkName": {
+      "type": "string",
+      "defaultValue": "devws-vnet",
+      "metadata": {
+        "description": "Virtual network name"
+      }
+    },
+    "addressPrefix": {
+      "type": "string",
+      "defaultValue": "10.0.0.0/24",
+      "metadata": {
+        "description": "Virtual network address prefix"
+      }
+    },
+    "virtualNetworkResourceGroup": {
+      "type": "string",
+      "defaultValue": "az-devvs-rg",
+      "metadata": {
+        "description": "Resource group of the VNet"
+      }
+    },
+    "subnet0Name": {
+      "type": "string",
+      "defaultValue": "devvs-subnet",
+      "metadata": {
+        "description": "VNet first subnet name"
+      }
+    },
+    "subnet0Prefix": {
+      "type": "string",
+      "defaultValue": "10.0.0.0/24",
+      "metadata": {
+        "description": "VNet first subnet prefix"
+      }
+    },
+    "nsgName": {
+      "type": "string",
+      "defaultValue": "devws-nsg",
+      "metadata": {
+        "description": "Network security group name"
+      }
+    }
+  },
+  "variables": {
+    "vnetID": "[resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+    "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnet0Name'))]",
+    "numberOfInstances": 1,
+    "computeAPIVersion": "2018-10-01",
+    "networkAPIVersion": "2018-12-01"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(parameters('nicNamePrefix'), copyindex())]",
+      "apiVersion": "[variables('networkAPIVersion')]",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "nicLoop",
+        "count": "[variables('numberOfInstances')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks/',parameters('virtualNetworkName'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups/',parameters('nsgName'))]",
+        "pipLoop"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
             "properties": {
-                "publicIpAllocationMethod": "Dynamic"
-            }
-        },
-		{
-        "type": "Microsoft.Network/networkSecurityGroups",
-        "name": "[parameters('nsgName')]",
-        "apiVersion": "2018-12-01",
-        "location": "[resourceGroup().location]",
-        "properties": {
-          "securityRules": [
-            {
-              "name": "default-allow-rdp",
-              "properties": {
-                "priority": 1000,
-                "sourceAddressPrefix": "*",
-                "protocol": "Tcp",
-                "destinationPortRange": "3389",
-                "access": "Allow",
-                "direction": "Inbound",
-                "sourcePortRange": "*",
-                "destinationAddressPrefix": "*"
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              },
+              "publicIpAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIpAddresses',concat(parameters('pipNamePrefix'),copyindex()))]"
               }
+            }
+          }
+        ],
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[parameters('virtualNetworkName')]",
+      "apiVersion": "[variables('networkAPIVersion')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('addressPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[parameters('subnet0Name')]",
+            "properties": {
+              "addressPrefix": "[parameters('subnet0Prefix')]"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIpAddresses",
+      "name": "[concat(parameters('pipNamePrefix'), copyindex())]",
+      "apiVersion": "[variables('networkApiVersion')]",
+      "copy": {
+        "name": "pipLoop",
+        "count": "[variables('numberOfInstances')]"
+      },
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publicIpAllocationMethod": "Dynamic"
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[parameters('nsgName')]",
+      "apiVersion": "[variables('networkApiVersion')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "default-allow-rdp",
+            "properties": {
+              "priority": 1000,
+              "sourceAddressPrefix": "*",
+              "protocol": "Tcp",
+              "destinationPortRange": "3389",
+              "access": "Allow",
+              "direction": "Inbound",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "dev-vs-ws",
+      "apiVersion": "[variables('computeAPIVersion')]",
+      "copy": {
+        "name": "virtualMachineLoop",
+        "count": "[variables('numberOfInstances')]"
+      },
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "nicLoop"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "dev-vs-ws",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[parameters('imagePublisher')]",
+            "offer": "[parameters('imageOffer')]",
+            "sku": "[parameters('imageSKU')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage",
+            "managedDisk": {
+               "storageAccountType": "Standard_LRS"
+            }
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(parameters('nicNamePrefix'),copyindex()))]"
             }
           ]
         }
-      },       
-	   {
-            "type": "Microsoft.Network/networkInterfaces",
-            "name": "[concat('devwsnic', copyindex(),guid(parameters('OS')))]",
-            "apiVersion": "2020-11-01",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups/',parameters('nsgName'))]"
-            ],
-            "copy": {
-                "name": "nicLoop",
-                "count": "[parameters('numberOfInstances')]"
-            },
-            "properties": {
-                "ipConfigurations": [
-                    {
-                        "name": "ipconfig",
-                        "properties": {
-                            "subnet": {
-                                "id": "[variables('subnetRef')]"
-                            },
-							"privateIPAllocationMethod": "Dynamic",
-							"publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat('devwspubip', copyindex(),guid(parameters('OS'))))]"
-                            }
-                        }
-                            
-                    }
-                ],
-				  "networkSecurityGroup": {
-                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
-                }
-            }
-        },
-        {
-            "type": "Microsoft.Compute/virtualMachines",
-            "name": "dev-vs-ws",
-            "apiVersion": "2021-07-01",
-            "location": "[parameters('location')]",
-            "copy": {
-                "name": "virtualMachineLoop",
-                "count": "[parameters('numberOfInstances')]"
-            },
-            "dependsOn": [
-                "nicLoop"
-            ],
-            "properties": {
-                "hardwareProfile": {
-                    "vmSize": "[parameters('vmSizes')]"
-                },
-                "osProfile": {
-                    "computerName": "dev-vs-ws",
-                    "adminUsername": "[parameters('adminUsername')]",
-                    "adminPassword": "[parameters('adminPassword')]"
-                },
-                "storageProfile": {
-                    "imageReference": "[variables('imageReference')]",
-                    "osDisk": {
-                        "createOption": "fromImage"
-                    }
-                },
-                "networkProfile": {
-                    "networkInterfaces": [
-                        {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces',concat('devwsnic', copyindex(),guid(parameters('OS'))))]"
-                        }
-                    ]
-                }
-            }
-        }
-    ]
+      }
+    }
+  ]
 }
