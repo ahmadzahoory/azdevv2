@@ -16,7 +16,7 @@
     },
     "vmNamePrefix": {
       "type": "string",
-      "defaultValue": "dev-vs-ws",
+      "defaultValue": "dev-py-ws",
       "metadata": {
         "description": "VM name prefix"
       }
@@ -207,7 +207,7 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "dev-ec-ws",
+      "name": "dev-py-ws",
       "apiVersion": "[variables('computeAPIVersion')]",
       "copy": {
         "name": "virtualMachineLoop",
@@ -222,7 +222,7 @@
           "vmSize": "[parameters('vmSize')]"
         },
         "osProfile": {
-          "computerName": "dev-ec-ws",
+          "computerName": "dev-py-ws",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
